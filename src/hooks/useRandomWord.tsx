@@ -19,7 +19,11 @@ async function getRandomWord(): Promise<string> {
 }
 
 export function useRandomWord() {
-  const { isPending: isLoading, data: word } = useQuery<string, Error>({
+  const {
+    isPending: isLoading,
+    data: word,
+    refetch,
+  } = useQuery<string, Error>({
     queryKey: ['randomWord'],
     queryFn: getRandomWord,
     staleTime: 5 * 60 * 1000,
@@ -28,5 +32,5 @@ export function useRandomWord() {
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
   });
 
-  return { isLoading, word };
+  return { isLoading, word, refetch };
 }

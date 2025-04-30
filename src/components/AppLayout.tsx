@@ -16,7 +16,9 @@ function AppLayout() {
     dispatch,
   } = useGameContext();
 
-  const { isLoading, word: fetchedWord } = useRandomWord();
+  const { isLoading, word: fetchedWord, refetch } = useRandomWord();
+
+  const playing = status === 'playing';
 
   useEffect(() => {
     if (fetchedWord)
@@ -24,8 +26,6 @@ function AppLayout() {
   }, [fetchedWord]);
 
   if (isLoading || !word) return <Spinner />;
-
-  const playing = status === 'playing';
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-[var(--font-sans)] flex flex-col items-center justify-center p-4">
@@ -50,7 +50,11 @@ function AppLayout() {
         <Button
           role="reset"
           type="button"
-          onClick={() => dispatch({ type: 'RESET' })}
+          onClick={() => {
+            dispatch({ type: 'RESET' });
+            setHideWord(false);
+            refetch();
+          }}
         >
           Reset
         </Button>
