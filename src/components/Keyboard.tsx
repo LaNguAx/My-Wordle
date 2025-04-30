@@ -1,45 +1,70 @@
-import { memo, useEffect } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { KEYBOARD_ROWS } from '../assets/consts';
 
-function Keyboard({ status, dispatch }: { status: any; dispatch: any }) {
-  console.log('render from keyboard');
+export default memo(function Keyboard({
+  status,
+  dispatch,
+}: {
+  status: any;
+  dispatch: any;
+}) {
+  // Single handler for both physical keys and button clicks
+  const handleInput = useCallback(
+    (rawKey: string) => {
+      if (status !== 'playing') return;
 
-  useEffect(() => {
-    function handleKeyClick(e: KeyboardEvent) {
-      if (status === 'playing') {
-        if (e.key.toLowerCase() === 'backspace')
+      const key = rawKey.toLowerCase();
+      switch (key) {
+        case 'backspace':
           dispatch({ type: 'DELETE_LETTER' });
-        else if (e.key.toLowerCase() === 'enter')
+          break;
+        case 'enter':
           dispatch({ type: 'SUBMIT_GUESS' });
-        else if (/^[a-zA-Z]$/.test(e.key)) {
-          dispatch({ type: 'ADD_LETTER', payload: e.key.toUpperCase() });
-        }
+          break;
+        default:
+          if (/^[a-z]$/.test(key)) {
+            dispatch({ type: 'ADD_LETTER', payload: key.toUpperCase() });
+          }
       }
-    }
-    document.addEventListener('keydown', handleKeyClick);
+    },
+    [status, dispatch]
+  );
 
-    return () => document.removeEventListener('keydown', handleKeyClick);
-  }, [status]);
+  // Listen for physical key presses once
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => handleInput(e.key);
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [handleInput]);
 
-  const playing = status === 'playing';
-  if (!playing) return <h1>You {status.toUpperCase()}!</h1>;
+  // If the game is over, show the status message instead of buttons
+  if (status !== 'playing') {
+    return (
+      <div className="text-center p-4">
+        <h1 className="text-2xl font-semibold">You {status.toUpperCase()}!</h1>
+      </div>
+    );
+  }
 
+  // Render the on-screen keyboard
   return (
     <div className="space-y-2">
-      {KEYBOARD_ROWS.map((row, rowIndex) => (
-        <div key={rowIndex} className="flex justify-center gap-1">
-          {row.map((key) => (
+      {KEYBOARD_ROWS.map((row, rowIdx) => (
+        <div key={rowIdx} className="flex justify-center gap-1">
+          {row.map((label) => (
             <button
-              key={key}
-              className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-dark)] text-white text-sm font-bold py-2 px-3 rounded active:scale-95 transition-all"
+              key={label}
+              type="button"
+              onClick={() => handleInput(label)}
+              className="bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-dark)] 
+                         text-white text-sm font-bold py-2 px-3 rounded 
+                         active:scale-95 transition-transform"
             >
-              {key}
+              {label}
             </button>
           ))}
         </div>
       ))}
     </div>
   );
-}
-
-export default memo(Keyboard);
+});
