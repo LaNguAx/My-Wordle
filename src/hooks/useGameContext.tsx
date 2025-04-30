@@ -92,6 +92,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
           currentGuess: '',
         };
       }
+      return state;
     }
     case 'RESET':
       return { ...initialState, word: state.word };
