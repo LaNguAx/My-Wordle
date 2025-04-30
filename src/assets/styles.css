@@ -1,0 +1,21 @@
+@import './fonts.css';
+@import 'tailwindcss';
+
+@theme {
+  /* Fonts */
+  --font-sans: 'Poppins', sans-serif;
+  --font-primary: 'Roboto', sans-serif;
+
+  /* Colors */
+  --color-primary: #3b82f6; /* Blue-500 */
+  --color-primary-dark: #1d4ed8; /* Blue-700 */
+  --color-secondary: #10b981; /* Emerald-500 */
+  --color-secondary-dark: #059669;
+
+  /* Wordle-like tile feedback */
+  --color-correct: #22c55e; /* Green-500 */
+  --color-present: #eab308; /* Yellow-500 */
+  --color-absent: #64748b; /* Slate-500 */
+  --color-bg: #f9fafb; /* Slate-50 */
+  --color-text: #0f172a; /* Slate-900 */
+}
